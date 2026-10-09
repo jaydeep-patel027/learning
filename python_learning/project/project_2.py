@@ -75,7 +75,7 @@ if len(items) == 0:
 else:
     
     
-    if bill > FREE_DELIVERY_ABOVE:
+    if bill >= FREE_DELIVERY_ABOVE:
         delivery = 0
     else:
         delivery = DELIVERY_FEE
