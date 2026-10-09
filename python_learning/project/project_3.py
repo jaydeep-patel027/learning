@@ -53,6 +53,7 @@ def make_report(name, *marks, **info):
 
 def build_records(rows):
     records = []
+    # TODO: Validate each student row before indexing into "name" and "marks" so malformed rows fail clearly.
     for student in read_students(rows):                 # one student per step
         info = {key: value for key, value in student.items()
                 if key not in ("name", "marks")}        # dict comprehension
