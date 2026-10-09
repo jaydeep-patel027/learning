@@ -1,6 +1,9 @@
-
 DELIVERY_FEE = 50            
 FREE_DELIVERY_ABOVE = 1000  
+
+# TODO: Confirm whether free delivery should apply at exactly ₹1000 or only above ₹1000.
+# If the rule is "₹1000 or more", update the comparison to >= instead of >.
+
 
 def ask_price():
     while True:
