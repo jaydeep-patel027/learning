@@ -53,6 +53,24 @@ class CurrentAccount(BankAccount):
         print(f"-> {self.owner}'s Current Account was charged a ₹50.00 monthly fee.")
 
 
+# TODO REVIEW: Good OOP implementation. Project shows correct use of class, object,
+# inheritance, polymorphism, and encapsulation for the learning topic.
+#
+# TODO ISSUE: Add validation for non-numeric inputs like strings, None, or float-like
+# invalid values. Right now the code assumes valid numeric data.
+#
+# TODO ISSUE: Add tests for edge cases such as:
+# - deposit(0) and deposit(-10)
+# - withdraw(0) and withdraw(-10)
+# - withdrawing exactly the full balance
+# - month_end() for a basic BankAccount should keep the balance unchanged
+#
+# TODO ISSUE: The business logic and printing are mixed in the same methods. For cleaner
+# code, output can be separated from calculation so it is easier to test.
+#
+# TODO IMPROVEMENT: Add docstrings or a short class description to make the file more
+# readable and easier to review.
+
 
 if __name__ == "__main__":
     print("--- 1. BUILDING OBJECTS & TESTING ENCAPSULATION ---")
