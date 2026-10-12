@@ -53,9 +53,7 @@ class CurrentAccount(BankAccount):
         print(f"-> {self.owner}'s Current Account was charged a ₹50.00 monthly fee.")
 
 
-# ==========================================
-# 4. TESTING AND ACCEPTANCE CRITERIA
-# ==========================================
+
 if __name__ == "__main__":
     print("--- 1. BUILDING OBJECTS & TESTING ENCAPSULATION ---")
     # Creating an object
