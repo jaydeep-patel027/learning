@@ -1,3 +1,5 @@
+                    #    Mini Movie Ticket Booking    #
+
 class MovieTicket:
     # Class-level attributes: Shared across ALL ticket instances
     tickets_sold = 0
