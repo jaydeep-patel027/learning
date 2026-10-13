@@ -1,31 +1,35 @@
-# SENIOR REVIEW: The project matches the required topic well. Keep the original junior comments and logic as-is.
-# TODO: Continue improving explanation in comments so future readers can clearly understand the timing of each Python concept.
-# REVIEW: Metaclass validates class creation, decorator validates method call, and ABC prevents invalid object creation.
+
+
+"""
+MODULE DOCSTRING (Added for better explanation):
+Timing of Python Concepts Demonstrated:
+1. METACLASS (ProductMeta): Executes at CLASS DEFINITION time.
+2. DECORATOR (require_stock): Executes at METHOD CALL time.
+3. ABSTRACT BASE CLASS (ABC): Executes at OBJECT CREATION time.
+"""
 
 from abc import abstractmethod, ABCMeta
-
-# REVIEW: Good overall structure for the project. The implementation covers the three required concepts in a single example: metaclass registration, decorator-based stock guard, and abstract base class enforcement.
-# TODO: Keep this pattern as a learning example, but add clearer comments/docstrings so future readers understand the timing of each mechanism: metaclass at class definition time, decorator at method call time, and ABC at object creation time.
-# REVIEW: This project aligns with the topic requirements from the HTML brief: automatic registry, category check, stock guard, and abstract shipping_cost rule.
 
 
 # ==========================================
 # 1. METACLASS (Runs at Class DEFINITION Time)
 # ==========================================
 class ProductMeta(ABCMeta):
-    # REVIEW: The registry mechanism is appropriate and the automatic registration approach is a strong design decision.
-    # TODO: Consider adding a clearer error message for the developer-facing contract: "every concrete product class must define category".
+   
+    
     registry = {}
 
     def __new__(mcs, name, bases, namespace):
-        # REVIEW: Using __new__ to validate the class definition is the correct metaclass pattern.
-        # TODO: This is a good place to also validate naming or other product rules if the project grows later.
+     
+        
         cls = super().__new__(mcs, name, bases, namespace)
 
         if bases:
             if "category" not in namespace:
+                # Improved Error Message as per TODO
                 raise TypeError(
-                    f"Fatal Error: Class '{name}' must define a 'category' attribute."
+                    f"Fatal Error: Class '{name}' must define a 'category' attribute. "
+                    "Developer Contract: every concrete product class must define category."
                 )
 
             mcs.registry[name] = cls
@@ -37,8 +41,9 @@ class ProductMeta(ABCMeta):
 # 2. DECORATOR (Runs at Method CALL Time)
 # ==========================================
 def require_stock(func):
-    # REVIEW: The decorator correctly centralizes the stock check, which matches the learning objective and keeps purchase logic reusable.
-    # TODO: Keep the decorator as the sole place for stock validation; avoid moving this logic into child purchase methods later.
+    """Decorator to enforce stock validation before proceeding with a purchase."""
+
+    
     def wrapper(self, *args, **kwargs):
         if self.stock <= 0:
             raise ValueError(
@@ -58,8 +63,19 @@ def require_stock(func):
 # 3. ABSTRACT BASE CLASS (Runs at Object CREATION Time)
 # ==========================================
 class Product(metaclass=ProductMeta):
-    # REVIEW: Declaring Product as an abstract base is correct because the shipping_cost behavior is required for all product implementations.
-    # TODO: Optional improvement: add a docstring explaining why Product cannot be instantiated and what each child must implement.
+    """
+    Abstract Base Class representing a generic store product.
+    
+    Why it cannot be instantiated: 
+    This class inherits from ABCMeta and contains an abstract method `shipping_cost`. 
+    Therefore, Python prevents direct instantiation of `Product`.
+    
+    What child classes must implement:
+    Every child class must implement the `shipping_cost(self)` method and must 
+    define a `category` class attribute (enforced by ProductMeta).
+    """
+
+    
     def __init__(self, name, price, stock):
         self.name = name
         self.price = price
@@ -71,8 +87,8 @@ class Product(metaclass=ProductMeta):
 
     @require_stock
     def purchase(self):
-        # REVIEW: This method has no stock check or print logic, which is exactly what the decorator is meant to handle.
-        # TODO: This is a good example of separation of concerns; keep it this way in future exercises.
+
+        
         self.stock -= 1
         total_cost = self.price + self.shipping_cost()
         return total_cost
@@ -82,8 +98,8 @@ class Product(metaclass=ProductMeta):
 # 4. CONCRETE PRODUCT CLASSES
 # ==========================================
 class Book(Product):
-    # REVIEW: Book is a valid concrete child class and implements the required shipping_cost method.
-    # TODO: Good example; no change needed here.
+
+    
     category = "book"
 
     def shipping_cost(self):
@@ -91,7 +107,7 @@ class Book(Product):
 
 
 class Electronics(Product):
-    # REVIEW: Electronics also follows the required pattern and is registered automatically through the metaclass.
+
     category = "electronics"
 
     def shipping_cost(self):
@@ -102,35 +118,41 @@ class Electronics(Product):
 # 5. TESTING & ACCEPTANCE CRITERIA
 # ==========================================
 if __name__ == "__main__":
-    # REVIEW: The test flow covers all key acceptance rules: registry output, invalid class definition, abstract class prevention, missing method prevention, and stock exhaustion.
-    # TODO: Consider converting these prints into assert-based tests for cleaner quality checks and easier grading.
+
+    
     print("--- 1. METACLASS REGISTRY TEST ---")
-    print(f"Registered Products: {list(ProductMeta.registry.keys())}")
+    assert "Book" in ProductMeta.registry, "Book should be in registry"
+    assert "Electronics" in ProductMeta.registry, "Electronics should be in registry"
+    print(f"Registered Products: {list(ProductMeta.registry.keys())} -> ASSERT PASSED")
 
     print("\n--- 2. METACLASS DEFINITION ERROR TEST ---")
     try:
-
         class Toy(Product):
             def shipping_cost(self):
                 return 30
-
+        assert False, "TypeError was not raised for missing 'category' attribute!"
     except TypeError as e:
-        print(f"Metaclass successfully blocked bad class definition: {e}")
+        assert "every concrete product class must define category" in str(e).lower()
+        print(f"Metaclass successfully blocked bad class definition: {e} -> ASSERT PASSED")
 
     print("\n--- 3. ABSTRACT BASE CLASS CREATION TEST ---")
     try:
         generic_product = Product("Generic Box", 100, 5)
+        assert False, "TypeError was not raised for generic Product instantiation!"
     except TypeError as e:
-        print(f"ABC successfully blocked generic Product creation: {e}")
+        assert "Can't instantiate abstract class" in str(e)
+        print(f"ABC successfully blocked generic Product creation: {e} -> ASSERT PASSED")
 
     try:
-
         class Magazine(Product):
             category = "magazine"
+            # Missing shipping_cost method
 
         my_mag = Magazine("Tech Monthly", 50, 10)
+        assert False, "TypeError was not raised for incomplete child creation!"
     except TypeError as e:
-        print(f"ABC successfully blocked incomplete child creation: {e}")
+        assert "abstract method" in str(e).lower()
+        print(f"ABC successfully blocked incomplete child creation: {e} -> ASSERT PASSED")
 
     print("\n--- 4. DECORATOR GUARD & PURCHASE LOOP TEST ---")
     my_book = Book("Dune", 500, stock=2)
@@ -138,12 +160,23 @@ if __name__ == "__main__":
 
     print(f"Initial '{my_book.name}' stock: {my_book.stock}")
 
+    # Buy twice to exhaust stock
+    cost1 = my_book.purchase()
+    assert cost1 == 540, "Incorrect total cost calculation for Book"
+    cost2 = my_book.purchase()
+    assert cost2 == 540
+    assert my_book.stock == 0, "Stock should be 0 after 2 purchases"
+
+    # 3rd purchase should raise ValueError due to decorator
     try:
-        print(f"Total cost: ₹{my_book.purchase()}")
-        print(f"Total cost: ₹{my_book.purchase()}")
-        print(f"Total cost: ₹{my_book.purchase()}")
+        my_book.purchase()
+        assert False, "ValueError was not raised for out-of-stock item!"
     except ValueError as e:
-        print(f"Decorator successfully blocked purchase: {e}")
+        assert "completely out of stock" in str(e).lower()
+        print(f"Decorator successfully blocked purchase: {e} -> ASSERT PASSED")
 
     print(f"\nBuying the laptop...")
-    print(f"Total cost: ₹{my_laptop.purchase()}")
+    laptop_cost = my_laptop.purchase()
+    assert laptop_cost == 85150, "Incorrect total cost calculation for Electronics"
+    print(f"Total cost: ₹{laptop_cost} -> ASSERT PASSED")
+    print("\nAll assert-based tests completed successfully!")
