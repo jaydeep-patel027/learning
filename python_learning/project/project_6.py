@@ -1,4 +1,11 @@
-                    #    Mini Movie Ticket Booking    #
+#    Mini Movie Ticket Booking    #
+
+# REVIEW SUMMARY:
+# - This file matches the required structure for Instance Method, Class Method, Property, and Static Method usage.
+# - The core logic is correct for the main acceptance criteria shown in topic_6_project.html.
+# - TODO: Add stronger input validation for whitespace, invalid text formats, and non-string values.
+# - TODO: Add clearer error messages for malformed booking strings in from_text() so the project is easier to debug.
+# - REVIEW: The seat validation logic is good for A-H + numeric seat numbers, but it should guard against None / non-string inputs.
 
 class MovieTicket:
     # Class-level attributes: Shared across ALL ticket instances
@@ -79,6 +86,8 @@ class MovieTicket:
         Checks if a seat code is valid.
         Doesn't need to know anything about the ticket object (self) or the class (cls).
         """
+        # REVIEW: This correctly supports A-H and numeric suffixes for the project requirement.
+        # TODO: Add a guard for non-string values like None, integers, or empty input before using `len()` and indexing.
         if len(seat) < 2:
             return False
         # Validates first letter is A-H, and the rest is a valid number
